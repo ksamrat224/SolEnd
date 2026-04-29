@@ -5,8 +5,7 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { AppShell } from "../components/app-shell";
-import { PageHeader } from "../components/page-header";
+
 import { RiskScoreGauge } from "../components/risk-score-gauge";
 import { WalletButton } from "../components/wallet-button";
 import {
@@ -162,13 +161,19 @@ export default function BorrowPage() {
   }
 
   return (
-    <AppShell>
-      <PageHeader
-        eyebrow="Borrow flow"
-        title="Borrow against your reputation"
-        accent="Instant limits from your on-chain history."
-        description="Phase 1: score analysis. Phase 2: configure loan terms. Phase 3: sign and receive SOL."
-      />
+    <div className="flex-1 bg-background text-foreground">
+      
+
+      <main className="mx-auto w-full max-w-6xl px-4 pb-20 pt-8 md:px-6">
+        <header className="mb-8">
+          <h1 className="text-3xl font-semibold tracking-tight md:text-4xl">
+            Borrow Against Your Reputation
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground md:text-base">
+            Phase 1: score analysis. Phase 2: configure loan terms. Phase 3:
+            sign and receive SOL.
+          </p>
+        </header>
 
         {status !== "connected" && (
           <section className="rounded-xl border border-border bg-card p-8 text-center">
@@ -186,11 +191,9 @@ export default function BorrowPage() {
         )}
 
         {status === "connected" && (
-          <div className="grid gap-8 lg:grid-cols-[360px_1fr]">
-            <section className="rounded-xl border border-border bg-card p-6 md:p-7">
-              <h2 className="border-b border-border/70 pb-3 text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                Step 1 · Risk score
-              </h2>
+          <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
+            <section className="rounded-xl border border-border bg-card p-6">
+              <h2 className="text-lg font-medium">Step 1 - Risk Score</h2>
 
               {scoreQuery.isLoading && (
                 <div className="mt-4 space-y-3">
@@ -262,10 +265,8 @@ export default function BorrowPage() {
               )}
             </section>
 
-            <section className="rounded-xl border border-border bg-card p-6 md:p-7">
-              <h2 className="border-b border-border/70 pb-3 text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-                Step 2 · Configure loan
-              </h2>
+            <section className="rounded-xl border border-border bg-card p-6">
+              <h2 className="text-lg font-medium">Step 2 - Configure Loan</h2>
 
               {scoreData && (
                 <div className="mt-4 grid gap-3 md:grid-cols-3">
@@ -388,7 +389,7 @@ export default function BorrowPage() {
                   <button
                     type="submit"
                     disabled={!canSubmit}
-                    className="inline-flex h-11 items-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex h-11 items-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {loanMutation.isPending || isSending
                       ? "Processing..."
@@ -406,13 +407,14 @@ export default function BorrowPage() {
           </div>
         )}
 
-      <footer className="mt-8 text-sm text-muted-foreground">
-        Need context first? Go back to{" "}
-        <Link href="/" className="underline">
-          landing
-        </Link>
-        .
-      </footer>
-    </AppShell>
+        <footer className="mt-8 text-sm text-muted-foreground">
+          Need context first? Go back to{" "}
+          <Link href="/" className="underline">
+            landing
+          </Link>
+          .
+        </footer>
+      </main>
+    </div>
   );
 }

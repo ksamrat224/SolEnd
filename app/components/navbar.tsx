@@ -1,132 +1,136 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { WalletButton } from "./wallet-button";
 import { useWallet } from "../lib/wallet/context";
+import { useBalance } from "../lib/hooks/use-balance";
+import { lamportsToSolString } from "../lib/lamports";
 import { isAdminWallet } from "../lib/admin";
 
-const NAV_LINKS = [
+const NAV_ITEMS = [
   { href: "/borrow", label: "Borrow" },
   { href: "/dashboard", label: "Dashboard" },
   { href: "/lend", label: "Lend" },
 ];
 
+const INFO_ITEMS = [
+  { href: "/about", label: "About" },
+  { href: "/faq", label: "FAQ" },
+];
+
+function getBackHref(pathname: string) {
+  if (
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/lend") ||
+    pathname.startsWith("/admin")
+  ) {
+    return "/borrow";
+  }
+
+  if (pathname.startsWith("/faq")) {
+    return "/about";
+  }
+
+  return "/";
+}
+
 export function Navbar() {
   const pathname = usePathname();
-  const { wallet } = useWallet();
+  const router = useRouter();
+  const { wallet, status } = useWallet();
+  const balance = useBalance(wallet?.account.address);
   const isAdmin = isAdminWallet(wallet?.account.address);
-  const links = isAdmin
-    ? [...NAV_LINKS, { href: "/admin", label: "Admin" }]
-    : NAV_LINKS;
+  const showBackButton = pathname !== "/";
+  const activeInfoHref = INFO_ITEMS.find((item) => pathname === item.href)?.href;
+  const navItems = isAdmin
+    ? [...NAV_ITEMS, { href: "/admin", label: "Admin" }]
+    : NAV_ITEMS;
+
+  function handleBack() {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+      return;
+    }
+
+    router.push(getBackHref(pathname));
+  }
 
   return (
-    <header
-      style={{
-        position: "sticky",
-        top: 0,
-        zIndex: 50,
-        padding: "16px 20px",
-        background: "transparent",
-        pointerEvents: "none",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: 920,
-          margin: "0 auto",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          backgroundColor: "rgba(255,255,255,0.92)",
-          backdropFilter: "blur(12px)",
-          WebkitBackdropFilter: "blur(12px)",
-          border: "1px solid rgba(0,0,0,0.1)",
-          padding: "10px 18px",
-          pointerEvents: "auto",
-          boxShadow: "0 2px 16px rgba(0,0,0,0.06)",
-        }}
-      >
-        {/* Logo */}
-        <Link
-          href="/"
-          aria-label="SolLend home"
-          style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}
-        >
-          <Image
-            src="/brand-logo.png"
-            alt=""
-            width={44}
-            height={44}
-            priority
-            unoptimized
-            sizes="44px"
-            style={{
-              flexShrink: 0,
-              width: 44,
-              height: 44,
-              imageRendering: "pixelated",
-            }}
-          />
-          <div>
-            <p
-              style={{
-                fontFamily: "var(--font-space), sans-serif",
-                fontWeight: 700,
-                fontSize: 15,
-                color: "#1a0a00",
-                letterSpacing: "-0.02em",
-                lineHeight: 1.1,
-              }}
-            >
-              sollend
-            </p>
-            <p
-              style={{
-                fontFamily: "var(--font-space), sans-serif",
-                fontSize: 8,
-                letterSpacing: "0.18em",
-                textTransform: "uppercase",
-                color: "#9a7a65",
-                lineHeight: 1,
-              }}
-            >
-              ON-CHAIN LENDING
-            </p>
-          </div>
-        </Link>
-
-        {/* Nav links */}
-        <nav style={{ display: "flex", alignItems: "center", gap: 2 }}>
-          {links.map((item) => {
-            const active = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                style={{
-                  padding: "6px 14px",
-                  fontSize: 13,
-                  fontWeight: active ? 600 : 400,
-                  fontFamily: "var(--font-space), sans-serif",
-                  color: active ? "#1a0a00" : "#6a5040",
-                  textDecoration: "none",
-                  backgroundColor: active ? "rgba(0,0,0,0.06)" : "transparent",
-                  transition: "background 0.15s, color 0.15s",
-                }}
+    <header className="sticky top-0 z-40 border-b border-border/80 bg-background/80 backdrop-blur-sm">
+      <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 md:px-6">
+        <div className="flex items-center gap-8">
+          <div className="flex items-center gap-3">
+            {showBackButton ? (
+              <button
+                type="button"
+                onClick={handleBack}
+                className="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-background px-3 text-sm font-medium transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                aria-label="Go back"
               >
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
+                <span aria-hidden="true">←</span>
+                <span className="hidden sm:inline">Back</span>
+              </button>
+            ) : null}
 
-        {/* CTA */}
-        <WalletButton
-          disconnectedLabel="Connect Wallet →"
-          className="!rounded-none !bg-[#e53935] !text-white !font-semibold !text-xs !px-4 !py-2 !h-auto !shadow-none"
-        />
+            <Link
+              href="/"
+              className="text-base font-semibold tracking-tight transition-colors hover:text-primary"
+            >
+              SolLend
+            </Link>
+          </div>
+
+          <nav className="hidden items-center gap-2 md:flex">
+            {navItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`rounded-md px-3 py-2 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                    isActive
+                      ? "bg-secondary text-secondary-foreground"
+                      : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+            <span className="mx-1 h-5 w-px bg-border" aria-hidden="true" />
+            {INFO_ITEMS.map((item) => {
+              const isActive = activeInfoHref === item.href;
+
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`rounded-full px-3 py-2 text-sm transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${
+                    isActive
+                      ? "bg-secondary text-secondary-foreground"
+                      : "text-muted-foreground hover:bg-secondary/60 hover:text-foreground"
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        <div className="flex items-center gap-3">
+          {status === "connected" && (
+            <span className="hidden rounded-md border border-border px-2.5 py-1.5 font-mono text-xs tabular-nums text-muted-foreground md:inline-flex">
+              {balance.lamports
+                ? lamportsToSolString(balance.lamports, 4)
+                : "0"}{" "}
+              SOL
+            </span>
+          )}
+          <WalletButton />
+        </div>
       </div>
     </header>
   );

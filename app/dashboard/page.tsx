@@ -1,12 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { AppShell } from "../components/app-shell";
-import { PageHeader } from "../components/page-header";
-import { WalletButton } from "../components/wallet-button";
+
 import { LoanCard } from "../components/loan-card";
 import { getLoans, getRiskScore } from "../lib/api";
 import { getLoanPdaMap } from "../lib/loan-local";
@@ -26,11 +25,18 @@ function lamportsStringToSol(value: string): string {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
   const { status, wallet } = useWallet();
   const { repayLoan, getPoolBalance, isSending } = useLoanProgram();
   const walletAddress = wallet?.account.address;
 
   const [localRepayState, setLocalRepayState] = useState<LocalRepayMap>({});
+
+  useEffect(() => {
+    if (status === "disconnected") {
+      router.replace("/");
+    }
+  }, [router, status]);
 
   const loansQuery = useQuery({
     queryKey: ["loans", walletAddress],
@@ -95,55 +101,30 @@ export default function DashboardPage() {
     [localRepayState, loans]
   );
 
-  if (status !== "connected") {
-    return (
-      <AppShell>
-        <PageHeader
-          eyebrow="Your loans"
-          title="Loan dashboard"
-          accent="Connect to see positions and pool liquidity."
-          description="Link a Solana wallet to load your active loans, risk score, and repayment actions."
-        />
-        <section className="rounded-xl border border-border bg-card p-8 text-center">
-          <h2 className="text-xl font-semibold">Connect wallet</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Your dashboard stays on this page — connect when you&apos;re ready.
-          </p>
-          <div className="mt-5 flex justify-center">
-            <WalletButton
-              disconnectedLabel="Connect Wallet"
-              className="h-11 px-5 text-sm"
-            />
-          </div>
-          <p className="mt-6 text-sm text-muted-foreground">
-            New here?{" "}
-            <Link href="/borrow" className="font-medium text-foreground underline">
-              Borrow
-            </Link>{" "}
-            ·{" "}
-            <Link href="/lend" className="font-medium text-foreground underline">
-              Lend
-            </Link>
-          </p>
-        </section>
-      </AppShell>
-    );
+  if (status === "disconnected") {
+    return null;
   }
 
   return (
-    <AppShell>
-      <PageHeader
-        eyebrow="Your loans"
-        title="Loan dashboard"
-        description="Track active loans, pool liquidity, and your eligibility profile."
-      />
+    <div className="flex-1 bg-background text-foreground">
+      
 
-      <div className="flex flex-wrap items-end justify-end gap-4">
-          <div className="rounded-xl border border-border bg-card px-4 py-3">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              Risk score
+      <main className="mx-auto w-full max-w-6xl px-4 pb-20 pt-10 md:px-6">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="posthog-heading-display text-primary">
+              Loan Dashboard
+            </h1>
+            <p className="mt-2 text-[16px] text-muted-foreground md:text-[18px]">
+              Track active loans, pool liquidity, and your eligibility profile.
             </p>
-            <p className="font-mono text-2xl font-semibold tabular-nums">
+          </div>
+
+          <div className="posthog-card p-[16px] min-w-[140px]">
+            <p className="text-[13px] font-bold uppercase tracking-wide text-muted-foreground">
+              Risk Score
+            </p>
+            <p className="font-mono text-[32px] font-bold tabular-nums text-foreground mt-1">
               {riskScoreQuery.data
                 ? Math.round(riskScoreQuery.data.score)
                 : "--"}
@@ -151,43 +132,41 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <section className="mt-6 rounded-xl border border-border bg-card p-5">
-          <p className="text-sm text-muted-foreground">Pool Balance</p>
-          <p className="mt-1 font-mono text-3xl font-semibold tabular-nums">
+        <section className="mt-8 posthog-card p-6 bg-[#fdfdf8]">
+          <p className="text-[14px] font-bold uppercase tracking-wide text-muted-foreground">Pool Balance</p>
+          <p className="mt-2 font-mono text-[40px] font-bold tabular-nums text-primary leading-none">
             {poolBalanceQuery.data
               ? (
                   Number(poolBalanceQuery.data) / LAMPORTS_PER_SOL
                 ).toLocaleString(undefined, { maximumFractionDigits: 4 })
               : "0"}{" "}
-            SOL
+            <span className="text-[20px] text-muted-foreground">SOL</span>
           </p>
         </section>
 
-        <section className="mt-8">
-          <h2 className="text-sm font-semibold uppercase tracking-[0.12em] text-muted-foreground">
-            Active loans
-          </h2>
+        <section className="mt-12">
+          <h2 className="posthog-heading-section text-primary">Active Loans</h2>
 
           {loansQuery.isLoading && (
-            <div className="mt-4 space-y-3">
+            <div className="mt-6 space-y-4">
               {Array.from({ length: 3 }).map((_, idx) => (
                 <div
                   key={idx}
-                  className="h-28 animate-pulse rounded-xl bg-secondary"
+                  className="h-[120px] animate-pulse rounded-[4px] bg-[#eeefe9] border border-[#bfc1b7]"
                 />
               ))}
             </div>
           )}
 
           {loansQuery.isError && (
-            <div className="mt-4 rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-sm">
-              <p className="font-medium text-destructive">
+            <div className="mt-6 rounded-[4px] border border-destructive/30 bg-destructive/10 p-5 p-4 text-[15px]">
+              <p className="font-semibold text-destructive">
                 Unable to fetch loans.
               </p>
               <button
                 type="button"
                 onClick={() => loansQuery.refetch()}
-                className="mt-3 rounded-md bg-secondary px-3 py-2 text-xs font-medium"
+                className="mt-3 posthog-btn-secondary"
               >
                 Retry
               </button>
@@ -197,13 +176,13 @@ export default function DashboardPage() {
           {!loansQuery.isLoading &&
             !loansQuery.isError &&
             activeLoans.length === 0 && (
-              <div className="mt-4 rounded-xl border border-border bg-card p-8 text-center">
-                <p className="text-lg font-medium">
+              <div className="mt-6 posthog-card p-10 text-center flex flex-col items-center justify-center">
+                <p className="text-[20px] font-bold text-foreground">
                   No active loans. Ready to borrow?
                 </p>
                 <Link
                   href="/borrow"
-                  className="mt-4 inline-flex h-11 items-center rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground"
+                  className="mt-6 posthog-btn-primary"
                 >
                   Open Borrow Page
                 </Link>
@@ -211,23 +190,23 @@ export default function DashboardPage() {
             )}
 
           {activeLoans.length > 0 && (
-            <div className="mt-4 space-y-4">
+            <div className="mt-6 space-y-6">
               <div className="grid gap-4 md:grid-cols-2">
                 {activeLoans.map((loan) => (
                   <LoanCard key={loan.id} loan={loan} />
                 ))}
               </div>
 
-              <div className="overflow-x-auto rounded-xl border border-border bg-card">
-                <table className="min-w-full text-left text-sm">
+              <div className="overflow-x-auto posthog-card !p-0">
+                <table className="min-w-full text-left text-[14px]">
                   <thead>
-                    <tr className="border-b border-border text-xs uppercase tracking-wide text-muted-foreground">
-                      <th className="px-4 py-3">Amount</th>
-                      <th className="px-4 py-3">Collateral</th>
-                      <th className="px-4 py-3">Interest</th>
-                      <th className="px-4 py-3">Due</th>
-                      <th className="px-4 py-3">Status</th>
-                      <th className="px-4 py-3">Action</th>
+                    <tr className="border-b border-[#bfc1b7] bg-[#eeefe9]/50 text-[12px] uppercase tracking-wider font-bold text-muted-foreground">
+                      <th className="px-5 py-4">Amount</th>
+                      <th className="px-5 py-4">Collateral</th>
+                      <th className="px-5 py-4">Interest</th>
+                      <th className="px-5 py-4">Due</th>
+                      <th className="px-5 py-4">Status</th>
+                      <th className="px-5 py-4 font-bold tracking-wider text-muted-foreground text-center">Action</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -241,29 +220,29 @@ export default function DashboardPage() {
                       return (
                         <tr
                           key={loan.id}
-                          className="border-b border-border/70 last:border-0"
+                          className="border-b border-[#bfc1b7] last:border-0 hover:bg-[#eeefe9]/30 transition-colors"
                         >
-                          <td className="px-4 py-3 font-mono tabular-nums">
+                          <td className="px-5 py-4 font-mono tabular-nums font-semibold">
                             {lamportsStringToSol(loan.loanAmountLamports)} SOL
                           </td>
-                          <td className="px-4 py-3 font-mono tabular-nums">
+                          <td className="px-5 py-4 font-mono tabular-nums text-muted-foreground">
                             {lamportsStringToSol(loan.collateralAmountLamports)}{" "}
                             SOL
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-5 py-4 font-medium">
                             {(loan.interestBps / 100).toFixed(2)}%
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-5 py-4 text-muted-foreground">
                             {new Date(
                               Number(loan.dueTimestamp) * 1000
                             ).toLocaleString()}
                           </td>
-                          <td className="px-4 py-3">
-                            <span className="rounded-full bg-secondary px-2 py-1 text-xs font-medium">
+                          <td className="px-5 py-4">
+                            <span className="inline-flex items-center rounded-full bg-[#eeefe9] border border-[#bfc1b7] px-2.5 py-1 text-[12px] font-bold text-primary">
                               {loan.status}
                             </span>
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-5 py-4 text-center">
                             <button
                               type="button"
                               disabled={
@@ -272,10 +251,10 @@ export default function DashboardPage() {
                                 repayMutation.isPending
                               }
                               onClick={() => repayMutation.mutate(loan.id)}
-                              className="rounded-md bg-primary px-3 py-2 text-xs font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                              className="posthog-btn-primary min-w-[80px] h-[32px] px-3 text-[13px] disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                               {repayMutation.isPending
-                                ? "Submitting..."
+                                ? "..."
                                 : "Repay"}
                             </button>
                           </td>
@@ -288,6 +267,7 @@ export default function DashboardPage() {
             </div>
           )}
         </section>
-    </AppShell>
+      </main>
+    </div>
   );
 }

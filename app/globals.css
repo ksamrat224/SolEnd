@@ -3,55 +3,54 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #fdf5e8;
-  --foreground: #1a0a00;
-  --primary: #e53935;
+  --background: #ffffff;
+  --foreground: #222222;
+  --primary: #ff385c;
   --primary-foreground: #ffffff;
-  --muted: #9a8070;
-  --muted-foreground: #6a4a35;
-  --card: rgba(255, 255, 255, 0.72);
-  --card-foreground: #1a0a00;
-  --popover: #fdf5e8;
-  --popover-foreground: #1a0a00;
-  --border: rgba(0, 0, 0, 0.09);
-  --border-low: rgba(0, 0, 0, 0.06);
-  --input: rgba(0, 0, 0, 0.12);
-  --accent: #f5e8d2;
-  --accent-foreground: #1a0a00;
-  --cream: #f5e8d2;
-  --destructive: #ef4444;
-  --destructive-foreground: #b91c1c;
-  --ring: rgba(229, 57, 53, 0.45);
-  --radius: 0.625rem;
-  --secondary: #f5e8d2;
-  --secondary-foreground: #1a0a00;
-  --font-sans: var(--font-space), system-ui, sans-serif;
-  --font-serif: var(--font-lora), Georgia, serif;
-  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+  --muted: #6a6a6a;
+  --muted-foreground: #6a6a6a;
+  --card: #ffffff;
+  --card-foreground: #222222;
+  --popover: #ffffff;
+  --popover-foreground: #222222;
+  --border: #e5e5e5;
+  --border-low: #f5f5f5;
+  --input: #e5e5e5;
+  --accent: #f7f7f7;
+  --accent-foreground: #222222;
+  --cream: #f7f7f7;
+  --destructive: #c13515;
+  --destructive-foreground: #ffffff;
+  --ring: #ff385c;
+  --radius: 14px;
+  --secondary: #f7f7f7;
+  --secondary-foreground: #222222;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 .dark {
-  --background: #100500;
-  --foreground: #fdf5e8;
-  --primary: #e53935;
+  --background: #222222;
+  --foreground: #ffffff;
+  --primary: #ff385c;
   --primary-foreground: #ffffff;
-  --muted: #7a6558;
-  --muted-foreground: #c4a990;
-  --card: rgba(42, 21, 16, 0.85);
-  --card-foreground: #fdf5e8;
-  --popover: #1a0d08;
-  --popover-foreground: #fdf5e8;
-  --border: rgba(253, 245, 232, 0.14);
-  --border-low: rgba(253, 245, 232, 0.08);
-  --input: rgba(253, 245, 232, 0.16);
-  --accent: #2a1812;
-  --accent-foreground: #fdf5e8;
-  --cream: #2a1812;
-  --destructive: #f87171;
-  --destructive-foreground: #fef2f2;
-  --ring: rgba(229, 57, 53, 0.55);
-  --secondary: #2a1812;
-  --secondary-foreground: #fdf5e8;
+  --muted: #929292;
+  --muted-foreground: #929292;
+  --card: #222222;
+  --card-foreground: #ffffff;
+  --popover: #222222;
+  --popover-foreground: #ffffff;
+  --border: #3f3f3f;
+  --border-low: rgba(63, 63, 63, 0.5);
+  --input: #3f3f3f;
+  --accent: #3f3f3f;
+  --accent-foreground: #ffffff;
+  --cream: #3f3f3f;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --ring: #ff385c;
+  --secondary: #3f3f3f;
+  --secondary-foreground: #ffffff;
 }
 
 @theme inline {
@@ -77,7 +76,6 @@
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --font-sans: var(--font-sans);
-  --font-serif: var(--font-serif);
   --font-mono: var(--font-mono);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -92,5 +90,23 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-sans);
+  }
+}
+
+@layer components {
+  .posthog-card {
+    @apply border border-border bg-card rounded-[20px] shadow-sm;
+  }
+  .posthog-btn-primary {
+    @apply inline-flex items-center justify-center rounded-[14px] bg-primary text-primary-foreground font-semibold px-6 py-3 transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .posthog-btn-secondary {
+    @apply inline-flex items-center justify-center rounded-[14px] border border-border bg-background text-foreground font-semibold px-6 py-3 transition-colors hover:bg-secondary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none;
+  }
+  .posthog-heading-display {
+    @apply font-sans font-bold tracking-tight text-3xl md:text-5xl;
+  }
+  .posthog-heading-section {
+    @apply font-sans font-semibold tracking-tight text-xl md:text-2xl;
   }
 }
