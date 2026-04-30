@@ -2,6 +2,10 @@
   "name": "solend",
   "version": "0.0.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ksamrat224/SolEnd.git"
+  },
   "description": "Next.js, Tailwind, @solana/kit, Anchor vault program",
   "keywords": [
     "anchor",
