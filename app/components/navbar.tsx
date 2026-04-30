@@ -51,19 +51,21 @@ export function Navbar() {
         {/* Logo */}
         <Link
           href="/"
+          aria-label="SolLend home"
           style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}
         >
           <Image
             src="/brand-logo.png"
-            alt="SolLend"
-            width={40}
-            height={40}
+            alt=""
+            width={44}
+            height={44}
             priority
-            sizes="40px"
+            unoptimized
+            sizes="44px"
             style={{
               flexShrink: 0,
-              width: 40,
-              height: 40,
+              width: 44,
+              height: 44,
               imageRendering: "pixelated",
             }}
           />
