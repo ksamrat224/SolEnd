@@ -1,5 +1,17 @@
 {
   "name": "solend",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Next.js, Tailwind, @solana/kit, Anchor vault program",
+  "keywords": [
+    "anchor",
+    "kit",
+    "nextjs",
+    "react",
+    "solana-kit",
+    "tailwind",
+    "typescript"
+  ],
   "scripts": {
     "anchor-build": "cd anchor && anchor build",
     "anchor-test": "cd anchor && anchor test --skip-deploy",
@@ -13,18 +25,6 @@
     "setup": "npm run anchor-build && npm run codama:js",
     "start": "next start"
   },
-  "description": "Next.js, Tailwind, @solana/kit, Anchor vault program",
-  "keywords": [
-    "anchor",
-    "kit",
-    "nextjs",
-    "react",
-    "solana-kit",
-    "tailwind",
-    "typescript"
-  ],
-  "version": "0.0.0",
-  "private": true,
   "dependencies": {
     "@solana/kit": "^6.3.0",
     "@solana/kit-client-rpc": "^0.7.0",
