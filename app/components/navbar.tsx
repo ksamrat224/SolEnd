@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { WalletButton } from "./wallet-button";
@@ -52,24 +53,20 @@ export function Navbar() {
           href="/"
           style={{ display: "flex", alignItems: "center", gap: 10, textDecoration: "none" }}
         >
-          <div
+          <Image
+            src="/brand-logo.png"
+            alt="SolLend"
+            width={40}
+            height={40}
+            priority
+            sizes="40px"
             style={{
-              width: 32,
-              height: 32,
-              backgroundColor: "#e53935",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
-              fontWeight: 800,
-              fontSize: 12,
-              letterSpacing: "-0.02em",
-              fontFamily: "var(--font-space), sans-serif",
               flexShrink: 0,
+              width: 40,
+              height: 40,
+              imageRendering: "pixelated",
             }}
-          >
-            SL
-          </div>
+          />
           <div>
             <p
               style={{

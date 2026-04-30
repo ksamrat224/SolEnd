@@ -24,9 +24,9 @@ export const metadata: Metadata = {
   description:
     "Get instant SOL loans based on your on-chain reputation. No KYC. No bank. Just Solana.",
   icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
+    icon: "/brand-logo.png",
+    shortcut: "/brand-logo.png",
+    apple: "/brand-logo.png",
   },
 };
 
