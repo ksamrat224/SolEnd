@@ -10,6 +10,12 @@
 - Phase 4 has started: the lender page and pool helpers exist, but the backend pool stats/activity routes are still pending.
 - Phase 5 has not started: Devnet deployment, pool initialization, and final polish are still outstanding.
 
+**Quick env setup:** copy [`.env.example`](.env.example) → `.env.local` at the repo root, and [`backend/.env.example`](backend/.env.example) → `backend/.env`.
+
+**Known limitation:** loan repay in the dashboard uses PDA metadata cached in **browser localStorage** after a borrow. Repay from the **same browser** where you created the loan; clearing site data removes that cache.
+
+**CI (optional):** GitHub Actions workflow template lives in [`docs/github-ci.yml.example`](docs/github-ci.yml.example). Copy it to `.github/workflows/ci.yml`. If `git push` is rejected for “workflow scope”, run `gh auth refresh -s workflow` and push again (or add the workflow in the GitHub UI).
+
 ---
 
 ## Table of Contents
@@ -436,6 +442,15 @@ solana balance
 ---
 
 ## Environment Variables
+
+Use the checked-in templates so you do not have to copy blocks manually:
+
+| Location           | Template                                       | Create                    |
+| ------------------ | ---------------------------------------------- | ------------------------- |
+| Frontend (Next.js) | [`.env.example`](.env.example)                 | `.env.local` at repo root |
+| Backend (API)      | [`backend/.env.example`](backend/.env.example) | `backend/.env`            |
+
+Values below mirror those files; adjust for your deploy.
 
 ### Backend (`backend/.env`)
 

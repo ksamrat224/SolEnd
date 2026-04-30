@@ -32,8 +32,11 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# env secrets (templates like .env.example are committed)
+.env
+.env.local
+.env.*.local
+backend/.env
 
 # vercel
 .vercel
@@ -52,4 +55,3 @@ test-ledger/
 # local agent/assistant skill folders
 /.agents/
 /.claude/
-/.github/
