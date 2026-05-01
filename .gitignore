@@ -55,3 +55,4 @@ test-ledger/
 # local agent/assistant skill folders
 /.agents/
 /.claude/
+/.github/
